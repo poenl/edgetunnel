@@ -32,9 +32,14 @@ jobs:
       - name: 更新 wrangler.toml 名称
         run: |
           sed -i 's/^name = ".*"$/name = "proxy-cf"/' wrangler.toml
+          echo "--- wrangler.toml after sed ---"
+          cat wrangler.toml
 
       - name: 提交更改并推送到prod分支
         run: |
           git add wrangler.toml
+          echo "--- Git Status before commit ---"
+          git status
           git commit -m "Update worker name to proxy-cf on prod branch" || echo "No changes to commit" # 如果没有更改，则不报错
+          echo "--- Git Push Output ---"
           git push origin prod

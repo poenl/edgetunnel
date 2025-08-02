@@ -1,0 +1,52 @@
+name: 更改worker项目名称
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main # 在main分支有新的提交时触发
+
+jobs:
+  update_prod_branch:
+    name: 更新prod分支的wrangler.toml
+    runs-on: ubuntu-latest
+    steps:
+      - name: 读取main分支内容
+        uses: actions/checkout@v3
+        with:
+          ref: main # 确保checkout的是main分支
+
+      - name: 配置Git用户
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: 切换到prod分支并合并main
+        run: |
+          git fetch origin prod:prod # 获取prod分支
+          git checkout prod # 切换到prod分支
+          git merge main --no-ff --allow-unrelated-histories -m "Merge main into prod for sync" || {
+            # 解决工作流文件冲突：保留main分支的版本
+            git checkout --theirs .github/workflows/update_worker_name.yml
+            git add .github/workflows/update_worker_name.yml
+
+            # 解决wrangler.toml冲突：先保留main分支的版本，然后修改name字段
+            git checkout --theirs wrangler.toml
+            awk '/^name = "/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
+            git add wrangler.toml
+
+            # 提交所有已解决的冲突
+            git commit -m "Resolve merge conflicts and update wrangler.toml on prod branch"
+          }
+
+      - name: 更新 wrangler.toml 名称
+        run: |
+          awk '/^name = "/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
+
+      - name: 提交更改并推送到prod分支
+        run: |
+          git add wrangler.toml
+          git commit -m "Update worker name to proxy-cf on prod branch" || echo "No changes to commit" # 如果没有更改，则不报错
+          git push origin prod

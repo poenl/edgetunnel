@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "--- wrangler.toml before sed ---"
           cat wrangler.toml
-          sed -i 's/^name = ".*"$/name = "proxy-cf"/' wrangler.toml
+          awk '/^name = ".*"$/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
           echo "--- wrangler.toml after sed ---"
           cat wrangler.toml
 

@@ -27,7 +27,12 @@ jobs:
         run: |
           git fetch origin prod:prod # 获取prod分支
           git checkout prod # 切换到prod分支
-          git merge main --no-ff --allow-unrelated-histories -m "Merge main into prod for sync" # 合并main到prod
+          git merge main --no-ff --allow-unrelated-histories -m "Merge main into prod for sync" || {
+            echo "Merge conflict detected. Resolving .github/workflows/update_worker_name.yml conflict..."
+            git checkout --theirs .github/workflows/update_worker_name.yml # 保留main分支的工作流文件
+            git add .github/workflows/update_worker_name.yml # 添加已解决冲突的文件
+            git commit -m "Resolve merge conflict in .github/workflows/update_worker_name.yml" # 提交冲突解决
+          }
 
       - name: 更新 wrangler.toml 名称
         run: |

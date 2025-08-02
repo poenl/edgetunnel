@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "--- wrangler.toml before sed ---"
           cat wrangler.toml
-          perl -pi -e 's/^name = ".*"$/name = "proxy-cf"/' wrangler.toml
+          sed -i '' 's/^name = ".*"$/name = "proxy-cf"/' wrangler.toml
           echo "--- wrangler.toml after sed ---"
           cat wrangler.toml
 

@@ -35,7 +35,7 @@ jobs:
 
             # 解决wrangler.toml冲突：先保留main分支的版本，然后修改name字段
             git checkout --theirs wrangler.toml
-            awk '/^name = ".*"$/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
+            awk '/^name = "/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
             git add wrangler.toml
 
             # 提交所有已解决的冲突
@@ -49,7 +49,7 @@ jobs:
           hexdump -C wrangler.toml
           echo "--- wrangler.toml before modification ---"
           cat wrangler.toml
-          awk '/^name = ".*"$/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
+          awk '/^name = "/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
           echo "--- wrangler.toml after sed ---"
           cat wrangler.toml
 

@@ -31,7 +31,9 @@ jobs:
 
       - name: 更新 wrangler.toml 名称
         run: |
-          sed -i 's/^name = ".*"$/name = "proxy-cf"/' wrangler.toml
+          echo "--- wrangler.toml before sed ---"
+          cat wrangler.toml
+          perl -pi -e 's/^name = ".*"$/name = "proxy-cf"/' wrangler.toml
           echo "--- wrangler.toml after sed ---"
           cat wrangler.toml
 

@@ -28,7 +28,6 @@ jobs:
           git fetch origin prod:prod # 获取prod分支
           git checkout prod # 切换到prod分支
           git merge main --no-ff --allow-unrelated-histories -m "Merge main into prod for sync" || {
-            echo "Merge conflict detected. Resolving conflicts..."
             # 解决工作流文件冲突：保留main分支的版本
             git checkout --theirs .github/workflows/update_worker_name.yml
             git add .github/workflows/update_worker_name.yml
@@ -44,20 +43,10 @@ jobs:
 
       - name: 更新 wrangler.toml 名称
         run: |
-          echo "--- Listing wrangler.toml and checking hex dump ---"
-          ls -l wrangler.toml
-          hexdump -C wrangler.toml
-          echo "--- wrangler.toml before modification ---"
-          cat wrangler.toml
           awk '/^name = "/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
-          echo "--- wrangler.toml after sed ---"
-          cat wrangler.toml
 
       - name: 提交更改并推送到prod分支
         run: |
           git add wrangler.toml
-          echo "--- Git Status before commit ---"
-          git status
           git commit -m "Update worker name to proxy-cf on prod branch" || echo "No changes to commit" # 如果没有更改，则不报错
-          echo "--- Git Push Output ---"
           git push origin prod

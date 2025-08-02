@@ -27,7 +27,7 @@ jobs:
         run: |
           git fetch origin prod:prod # 获取prod分支
           git checkout prod # 切换到prod分支
-          git merge main --no-ff -m "Merge main into prod for sync" # 合并main到prod
+          git merge main --no-ff --allow-unrelated-histories -m "Merge main into prod for sync" # 合并main到prod
 
       - name: 更新 wrangler.toml 名称
         run: |

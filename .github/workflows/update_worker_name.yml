@@ -36,7 +36,10 @@ jobs:
 
       - name: 更新 wrangler.toml 名称
         run: |
-          echo "--- wrangler.toml before sed ---"
+          echo "--- Listing wrangler.toml and checking hex dump ---"
+          ls -l wrangler.toml
+          hexdump -C wrangler.toml
+          echo "--- wrangler.toml before modification ---"
           cat wrangler.toml
           awk '/^name = ".*"$/ { print "name = \"proxy-cf\""; next } { print }' wrangler.toml > temp_wrangler.toml && mv temp_wrangler.toml wrangler.toml
           echo "--- wrangler.toml after sed ---"
